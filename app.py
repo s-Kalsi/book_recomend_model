@@ -5,6 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import NMF
 import warnings
+import os
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
@@ -24,7 +25,8 @@ def load_data():
     
     try:
         print("Loading books data")
-        df_clean = pd.read_csv('static/data/books_clean.csv')
+        csv_path = os.path.join(os.path.dirname(__file__), 'static', 'data', 'books_clean.csv')
+        df_clean = pd.read_csv(csv_path)
         
         # Clean and prepare columns
         required_columns = ['title', 'authors_clean', 'categories_clean', 'combined_features']
