@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📚 AI Book Recommender</title>
+    <title>Book Similar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -11,7 +11,7 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1>📚 AI Book Recommender</h1>
+            <h1><img src = "static\data\library.png" style = "width: 100px; height:50px"> Similar Book</h1>
             <p>Discover your next favorite book using machine learning</p>
         </header>
 
@@ -27,21 +27,21 @@
         <!-- Recommendations Section -->
         <section class="recommendations-section">
             <div id="recommendationsContainer" class="recommendations-container">
-                <h2>🎯 Book Recommendations</h2>
+                <h2><img src = "static\data\books.png" style = "width: 100px; height:50px"> Book Recommendations</h2>
                 <p>Search for a book above and click on it to get personalized recommendations!</p>
             </div>
         </section>
 
         <!-- Random Books Section -->
         <section class="random-section">
-            <h2>🎲 Explore Random Books</h2>
+            <h2><img src = "static\data\bookshelf.png" style = "width: 100px; height:50px"> Explore Random Books</h2>
             <button id="randomBtn">Get Random Books</button>
             <div id="randomBooks" class="books-grid"></div>
         </section>
 
         <!-- Footer -->
         <footer class="footer">
-            <p>Built with ❤️ using Python, Flask, and Machine Learning</p>
+            <p>Built with using Python, Flask, and Machine Learning</p>
         </footer>
     </div>
 
