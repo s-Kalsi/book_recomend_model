@@ -20,22 +20,18 @@ pop_scores = None
 predicted_ratings = None
 
 def load_data():
-    """Load and preprocess data"""
     global df_clean, tfidf_matrix, cosine_sim, indices, use_collab, pop_scores, predicted_ratings
     
     try:
-        print("Loading books data")
-        csv_path = os.path.join(os.path.dirname(__file__), 'static', 'data', 'books_clean.csv')
-        df_clean = pd.read_csv(csv_path)
+        print("🔍 Current working directory:", os.getcwd())
+        print("🔍 Files in current directory:", os.listdir('.'))
         
-        # Clean and prepare columns
-        required_columns = ['title', 'authors_clean', 'categories_clean', 'combined_features']
-        for col in required_columns:
-            if col in df_clean.columns:
-                df_clean[col] = df_clean[col].fillna('').astype(str)
-            else:
-                print(f"Warning: Column '{col}' not found in dataset")
-                return False
+        csv_path = os.path.join(os.path.dirname(__file__), 'static', 'data', 'books_clean.csv')
+        print(f"🔍 Looking for CSV at: {csv_path}")
+        print(f"🔍 CSV file exists: {os.path.exists(csv_path)}")
+        
+        df_clean = pd.read_csv(csv_path)
+        print(f"✅ Loaded {len(df_clean)} books")
         
         # Ensure ratings columns exist
         if 'average_rating_clean' not in df_clean.columns:
