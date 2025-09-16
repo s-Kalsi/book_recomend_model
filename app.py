@@ -23,7 +23,7 @@ def load_data():
     global df_clean, tfidf_matrix, cosine_sim, indices, use_collab, pop_scores, predicted_ratings
     
     try:
-        print("🔍 Loading books data...")
+        print("Loading books data")
         df_clean = pd.read_csv('static/data/books_clean.csv')
         
         # Clean and prepare columns
@@ -32,7 +32,7 @@ def load_data():
             if col in df_clean.columns:
                 df_clean[col] = df_clean[col].fillna('').astype(str)
             else:
-                print(f"⚠️  Warning: Column '{col}' not found in dataset")
+                print(f"Warning: Column '{col}' not found in dataset")
                 return False
         
         # Ensure ratings columns exist
@@ -41,7 +41,7 @@ def load_data():
         if 'ratings_count_clean' not in df_clean.columns:
             df_clean['ratings_count_clean'] = 0
             
-        print(f"✅ Loaded {len(df_clean)} books")
+        print(f"Loaded {len(df_clean)} books")
         
         # Try collaborative filtering
         try:
@@ -54,14 +54,14 @@ def load_data():
             H = nmf_model.components_
             predicted_ratings = np.dot(W, H)
             use_collab = True
-            print("✅ Collaborative filtering model loaded")
+            print("Collaborative filtering model loaded")
         except FileNotFoundError:
             pop_scores = df_clean['ratings_count_clean'].values
             use_collab = False
-            print("✅ Using popularity-based recommendations")
+            print("Using popularity-based recommendations")
         
         # Build TF-IDF model
-        print("🔍 Building TF-IDF model...")
+        print("Building TF-IDF model...")
         vectorizer = TfidfVectorizer(
             stop_words='english',
             max_features=10000,
@@ -71,16 +71,16 @@ def load_data():
         )
         tfidf_matrix = vectorizer.fit_transform(df_clean['combined_features'])
         cosine_sim = cosine_similarity(tfidf_matrix)
-        print("✅ TF-IDF model created")
+        print("TF-IDF model created")
         
         # Create title mapping
         indices = pd.Series(df_clean.index, index=df_clean['title']).drop_duplicates()
-        print("✅ Title mapping created")
+        print("Title mapping created")
         
         return True
         
     except Exception as e:
-        print(f"❌ Error loading data: {e}")
+        print(f"Error loading data: {e}")
         return False
 
 def normalize(scores: np.ndarray) -> np.ndarray:
@@ -106,7 +106,7 @@ def search():
             return jsonify({'results': []})
         
         term_lower = term.lower()
-        print(f"🔍 Search term: '{term_lower}'")
+        print(f"Search term: '{term_lower}'")
         
         # Search in multiple columns
         title_mask = df_clean['title'].str.lower().str.contains(term_lower, na=False, regex=False)
@@ -115,7 +115,7 @@ def search():
         
         matches = df_clean[title_mask | author_mask | category_mask].head(10)
         
-        print(f"📚 Found {len(matches)} matches")
+        print(f"Found {len(matches)} matches")
         
         # Format results
         results = []
@@ -130,7 +130,7 @@ def search():
         return jsonify({'results': results})
         
     except Exception as e:
-        print(f"❌ Search error: {e}")
+        print(f"Search error: {e}")
         return jsonify({'error': 'Search failed'}), 500
 
 @app.route('/recommend', methods=['POST'])
@@ -146,7 +146,7 @@ def recommend():
         w_content = data.get('w_content', 0.7)
         w_collab = data.get('w_collab', 0.3)
         
-        print(f"🎯 Getting recommendations for: '{title}'")
+        print(f"Getting recommendations for: '{title}'")
         
         if title not in indices:
             return jsonify({'error': f"Book '{title}' not found"}), 404
@@ -191,11 +191,11 @@ def recommend():
                     'average_rating_clean': float(row.get('average_rating_clean', 0))
                 })
         
-        print(f"✅ Generated {len(recommendations)} recommendations")
+        print(f"Generated {len(recommendations)} recommendations")
         return jsonify({'recommendations': recommendations})
         
     except Exception as e:
-        print(f"❌ Recommendation error: {e}")
+        print(f"Recommendation error: {e}")
         return jsonify({'error': 'Recommendation failed'}), 500
 
 @app.route('/random')
@@ -216,11 +216,11 @@ def random_books():
                 'average_rating_clean': float(row.get('average_rating_clean', 0))
             })
         
-        print(f"🎲 Generated {len(books)} random books")
+        print(f"Generated {len(books)} random books")
         return jsonify({'books': books})
         
     except Exception as e:
-        print(f"❌ Random books error: {e}")
+        print(f"Random books error: {e}")
         return jsonify({'books': []})
 
 @app.route('/health')
@@ -234,9 +234,9 @@ def health():
     return jsonify(status)
 
 if __name__ == '__main__':
-    print("🚀 Starting Book Recommender App...")
+    print("Starting Book Recommender App...")
     if load_data():
-        print("✅ Server ready!")
+        print("Server ready!")
         app.run(debug=True, port=5000)
     else:
-        print("❌ Failed to initialize. Check your data files.")
+        print("Failed to initialize. Check your data files.")
