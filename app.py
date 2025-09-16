@@ -95,41 +95,41 @@ def home():
 @app.route('/search', methods=['POST'])
 def search():
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({'error': 'No JSON data received'}), 400
-            
-        term = data.get('query', '').strip()
-        if not term:
+        # Safely parse JSON, defaulting to empty dict on failure
+        data = request.get_json(silent=True) or {}
+        
+        # Extract and validate the query term
+        term = data.get('query', '')
+        if not isinstance(term, str) or not term.strip():
             return jsonify({'results': []})
         
-        term_lower = term.lower()
-        print(f"Search term: '{term_lower}'")
+        term_lower = term.strip().lower()
+        app.logger.debug(f"Search term received: '{term_lower}'")
         
-        # Search in multiple columns
+        # Perform the search
         title_mask = df_clean['title'].str.lower().str.contains(term_lower, na=False, regex=False)
         author_mask = df_clean['authors_clean'].str.lower().str.contains(term_lower, na=False, regex=False)
         category_mask = df_clean['categories_clean'].str.lower().str.contains(term_lower, na=False, regex=False)
-        
         matches = df_clean[title_mask | author_mask | category_mask].head(10)
         
-        print(f"Found {len(matches)} matches")
+        app.logger.debug(f"Found {len(matches)} matches for '{term_lower}'")
         
-        # Format results
-        results = []
-        for _, row in matches.iterrows():
-            results.append({
-                'title': str(row['title']),
-                'authors_clean': str(row['authors_clean']),
-                'categories_clean': str(row['categories_clean']),
-                'average_rating_clean': float(row.get('average_rating_clean', 0))
-            })
-        
+        # Build results list
+        results = [
+            {
+                'title': row['title'],
+                'authors_clean': row['authors_clean'],
+                'categories_clean': row['categories_clean'],
+                'average_rating_clean': row.get('average_rating_clean', 0)
+            }
+            for _, row in matches.iterrows()
+        ]
         return jsonify({'results': results})
-        
+    
     except Exception as e:
-        print(f"Search error: {e}")
+        app.logger.error(f"Search error: {e}", exc_info=True)
         return jsonify({'error': 'Search failed'}), 500
+
 
 @app.route('/recommend', methods=['POST'])
 def recommend():
