@@ -223,13 +223,18 @@ def random_books():
 
 @app.route('/health')
 def health():
+    csv_path = os.path.join(os.path.dirname(__file__), 'static', 'data', 'books_clean.csv')
     status = {
         'status': 'healthy' if df_clean is not None else 'error',
         'books_loaded': len(df_clean) if df_clean is not None else 0,
         'collab_mode': use_collab,
-        'tfidf_ready': tfidf_matrix is not None
+        'tfidf_ready': tfidf_matrix is not None,
+        'csv_exists': os.path.exists(csv_path),
+        'current_dir': os.getcwd(),
+        'csv_path': csv_path
     }
     return jsonify(status)
+
 
 if __name__ == '__main__':
     print("Starting Book Recommender App...")
