@@ -1,3 +1,5 @@
+// static/js/script.js
+
 class BookRecommender {
     constructor() {
         this.searchInput = document.getElementById('searchInput');
@@ -6,6 +8,8 @@ class BookRecommender {
         this.recommendationsContainer = document.getElementById('recommendationsContainer');
         this.randomBtn = document.getElementById('randomBtn');
         this.randomBooks = document.getElementById('randomBooks');
+        this.allBooksBtn = document.getElementById('allBooksBtn');
+        this.allBooksContainer = document.getElementById('allBooksContainer');
         
         this.initializeEventListeners();
         this.loadRandomBooks();
@@ -17,6 +21,7 @@ class BookRecommender {
             if (e.key === 'Enter') this.searchBooks();
         });
         this.randomBtn.addEventListener('click', () => this.loadRandomBooks());
+        this.allBooksBtn.addEventListener('click', () => this.loadAllBooks());
     }
     
     async searchBooks() {
@@ -29,20 +34,15 @@ class BookRecommender {
             const response = await fetch('/search', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({query: query})
+                body: JSON.stringify({query})
             });
-            
             const data = await response.json();
-            
             if (data.error) {
                 this.showError(this.searchResults, data.error);
-                return;
+            } else {
+                this.displaySearchResults(data.results);
             }
-            
-            this.displaySearchResults(data.results);
-            
-        } catch (error) {
-            console.error('Search error:', error);
+        } catch {
             this.showError(this.searchResults, 'Failed to search books. Please try again.');
         }
     }
@@ -62,18 +62,13 @@ class BookRecommender {
                     w_collab: 0.3
                 })
             });
-            
             const data = await response.json();
-            
             if (data.error) {
                 this.showError(this.recommendationsContainer, data.error);
-                return;
+            } else {
+                this.displayRecommendations(bookTitle, data.recommendations);
             }
-            
-            this.displayRecommendations(bookTitle, data.recommendations);
-            
-        } catch (error) {
-            console.error('Recommendation error:', error);
+        } catch {
             this.showError(this.recommendationsContainer, 'Failed to get recommendations. Please try again.');
         }
     }
@@ -85,18 +80,32 @@ class BookRecommender {
             const response = await fetch('/random');
             const data = await response.json();
             this.displayRandomBooks(data.books);
-        } catch (error) {
-            console.error('Random books error:', error);
+        } catch {
             this.showError(this.randomBooks, 'Failed to load random books.');
         }
     }
     
+    async loadAllBooks() {
+        this.showLoading(this.allBooksContainer);
+        
+        try {
+            const response = await fetch('/all-books');
+            const data = await response.json();
+            if (data.error) {
+                this.showError(this.allBooksContainer, data.error);
+            } else {
+                this.displayAllBooks(data.books);
+            }
+        } catch {
+            this.showError(this.allBooksContainer, 'Failed to load books.');
+        }
+    }
+    
     displaySearchResults(books) {
-        if (!books || books.length === 0) {
+        if (!books.length) {
             this.searchResults.innerHTML = '<p class="error">No books found. Try different keywords.</p>';
             return;
         }
-        
         const html = books.map(book => `
             <div class="book-card" onclick="recommender.getRecommendations('${book.title.replace(/'/g, "\\'")}')">
                 <div class="book-title">${book.title}</div>
@@ -105,20 +114,18 @@ class BookRecommender {
                 <div class="book-rating">⭐ ${book.average_rating_clean}</div>
             </div>
         `).join('');
-        
         this.searchResults.innerHTML = `
             <h3>Search Results (click on a book to get recommendations):</h3>
             ${html}
         `;
     }
     
-    displayRecommendations(originalTitle, recommendations) {
-        if (!recommendations || recommendations.length === 0) {
+    displayRecommendations(originalTitle, books) {
+        if (!books.length) {
             this.recommendationsContainer.innerHTML = '<p class="error">No recommendations found.</p>';
             return;
         }
-        
-        const html = recommendations.map(book => `
+        const html = books.map(book => `
             <div class="book-card">
                 <div class="book-title">
                     ${book.title}
@@ -129,21 +136,18 @@ class BookRecommender {
                 <div class="book-rating">⭐ ${book.average_rating_clean}</div>
             </div>
         `).join('');
-        
         this.recommendationsContainer.innerHTML = `
             <h2>🎯 Recommendations for "${originalTitle}"</h2>
             ${html}
         `;
-        
         this.recommendationsContainer.scrollIntoView({ behavior: 'smooth' });
     }
     
     displayRandomBooks(books) {
-        if (!books || books.length === 0) {
+        if (!books.length) {
             this.randomBooks.innerHTML = '<p class="error">Failed to load random books.</p>';
             return;
         }
-        
         const html = books.map(book => `
             <div class="book-card" onclick="recommender.getRecommendations('${book.title.replace(/'/g, "\\'")}')">
                 <div class="book-title">${book.title}</div>
@@ -152,8 +156,23 @@ class BookRecommender {
                 <div class="book-rating">⭐ ${book.average_rating_clean}</div>
             </div>
         `).join('');
-        
         this.randomBooks.innerHTML = html;
+    }
+    
+    displayAllBooks(books) {
+        if (!books.length) {
+            this.allBooksContainer.innerHTML = '<p class="error">No books available.</p>';
+            return;
+        }
+        const html = books.map(b => `
+            <div class="book-item" onclick="recommender.getRecommendations('${b.title.replace(/'/g, "\\'")}')">
+                <h3>${b.title}</h3>
+                <p><em>by ${b.author}</em></p>
+                <p>${b.snippet}</p>
+            </div>
+        `).join('');
+        this.allBooksContainer.innerHTML = html;
+        this.allBooksContainer.scrollIntoView({ behavior: 'smooth' });
     }
     
     showLoading(element) {
@@ -165,7 +184,6 @@ class BookRecommender {
     }
 }
 
-// Initialize the app when the page loads
 let recommender;
 document.addEventListener('DOMContentLoaded', () => {
     recommender = new BookRecommender();

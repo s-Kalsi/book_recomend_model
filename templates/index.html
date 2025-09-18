@@ -9,13 +9,13 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        
         <header class="header">
             <h1><img src = "static\data\library.png" style = "width: 100px; height:50px"> Similar Book</h1>
             <p>Discover your next favorite book using machine learning</p>
         </header>
 
-        <!-- Search Section -->
+        
         <section class="search-section">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search for books, authors, or genres..." />
@@ -24,7 +24,14 @@
             <div id="searchResults" class="results-container"></div>
         </section>
 
-        <!-- Recommendations Section -->
+        <section class="all-books-section">
+            <h2><img src = "static\data\library.png" style = "width: 100px; height:50px"> All Books (A–Z)</h2>
+            <button id="allBooksBtn">View All Books</button>
+            <div id="allBooksContainer" class="books-list"></div>
+        </section>
+
+
+        
         <section class="recommendations-section">
             <div id="recommendationsContainer" class="recommendations-container">
                 <h2><img src = "static\data\books.png" style = "width: 100px; height:50px"> Book Recommendations</h2>
@@ -32,14 +39,14 @@
             </div>
         </section>
 
-        <!-- Random Books Section -->
+        
         <section class="random-section">
             <h2><img src = "static\data\bookshelf.png" style = "width: 100px; height:50px"> Explore Random Books</h2>
             <button id="randomBtn">Get Random Books</button>
             <div id="randomBooks" class="books-grid"></div>
         </section>
 
-        <!-- Footer -->
+        
         <footer class="footer">
             <p>Built with using Python, Flask, and Machine Learning</p>
         </footer>
