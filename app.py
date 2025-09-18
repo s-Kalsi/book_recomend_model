@@ -64,10 +64,10 @@ def load_data():
         print("Building TF-IDF model...")
         vectorizer = TfidfVectorizer(
             stop_words='english',
-            max_features=5000,
-            ngram_range=(1,2),
-            min_df=2,
-            max_df=0.8
+            max_features=10000,
+            ngram_range=(2,3),
+            min_df=5,
+            max_df=0.9
         )
         tfidf_matrix = vectorizer.fit_transform(df_clean['combined_features'])
         cosine_sim = cosine_similarity(tfidf_matrix)
@@ -234,7 +234,7 @@ def health():
     return jsonify(status)
 
 if __name__ == '__main__':
-    print("🚀 Starting Book Recommender App...")
+    print("Starting Book Recommender App...")
     if load_data():
         print("Server ready!")
         app.run(debug=True, port=5000)
