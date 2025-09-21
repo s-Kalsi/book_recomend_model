@@ -51,7 +51,7 @@ def load_data():
         user_item = ratings_df.pivot_table(
             index='user_id', columns='book_id', values='rating'
         ).fillna(0)
-        nmf_model = NMF(n_components=40, random_state=50)
+        nmf_model = NMF(n_components=30, random_state=42)
         W = nmf_model.fit_transform(user_item)
         H = nmf_model.components_
         predicted_ratings = np.dot(W, H)
