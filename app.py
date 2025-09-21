@@ -64,7 +64,7 @@ def load_data():
 
     vectorizer = TfidfVectorizer(
         stop_words='english', max_features=10000,
-        ngram_range=(2, 3), min_df=3, max_df=0.9
+        ngram_range=(1, 4), min_df=3, max_df=0.9
     )
     tfidf_matrix = vectorizer.fit_transform(df_clean['combined_features'])
     cosine_sim = cosine_similarity(tfidf_matrix)
