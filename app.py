@@ -51,7 +51,7 @@ def load_data():
         user_item = ratings_df.pivot_table(
             index='user_id', columns='book_id', values='rating'
         ).fillna(0)
-        nmf_model = NMF(n_components=20, random_state=42)
+        nmf_model = NMF(n_components=40, random_state=50)
         W = nmf_model.fit_transform(user_item)
         H = nmf_model.components_
         predicted_ratings = np.dot(W, H)
@@ -63,8 +63,8 @@ def load_data():
         print("Using popularity-based recommendations")
 
     vectorizer = TfidfVectorizer(
-        stop_words='english', max_features=5000,
-        ngram_range=(1, 2), min_df=2, max_df=0.8
+        stop_words='english', max_features=10000,
+        ngram_range=(2, 3), min_df=3, max_df=0.9
     )
     tfidf_matrix = vectorizer.fit_transform(df_clean['combined_features'])
     cosine_sim = cosine_similarity(tfidf_matrix)
@@ -115,9 +115,9 @@ def recommend():
         data = request.get_json(silent=True) or {}
         title = data.get('title', '').strip()
         user_id = int(data.get('user_id', 1))
-        K = int(data.get('K', 10))
-        w_content = float(data.get('w_content', 0.6))
-        w_collab = float(data.get('w_collab', 0.4))
+        K = int(data.get('K', 15))
+        w_content = float(data.get('w_content', 0.8))
+        w_collab = float(data.get('w_collab', 0.2))
 
         if title not in indices:
             return jsonify({'error': f"Book '{title}' not found"}), 404
