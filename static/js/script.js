@@ -57,9 +57,9 @@ class BookRecommender {
                 body: JSON.stringify({
                     title: bookTitle,
                     user_id: 1,
-                    K: 8,
-                    w_content: 0.7,
-                    w_collab: 0.3
+                    K: 15,
+                    w_content: 0.6,
+                    w_collab: 0.4
                 })
             });
             const data = await response.json();

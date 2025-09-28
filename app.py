@@ -116,12 +116,14 @@ def recommend():
         title = data.get('title', '').strip()
         user_id = int(data.get('user_id', 1))
         K = int(data.get('K', 15))
-        w_content = float(data.get('w_content', 0.8))
-        w_collab = float(data.get('w_collab', 0.2))
+        w_content = float(data.get('w_content', 0.6))
+        w_collab = float(data.get('w_collab', 0.4))
 
         if title not in indices:
             return jsonify({'error': f"Book '{title}' not found"}), 404
         idx = indices[title]
+        if isinstance(idx, pd.Series) or isinstance(idx, pd.Index):
+            idx = idx[0]
 
         content_scores = cosine_sim[idx]
         c_norm = normalize(content_scores)
@@ -130,6 +132,10 @@ def recommend():
             if not (1 <= user_id <= predicted_ratings.shape[0]):
                 return jsonify({'error': f"User ID {user_id} out of range"}), 400
             collab_scores = predicted_ratings[user_id - 1]
+
+            # Ensure collab_scores length matches df_clean length
+            if len(collab_scores) != len(df_clean):
+                collab_scores = np.resize(collab_scores, len(df_clean))
         else:
             collab_scores = pop_scores if pop_scores is not None else np.ones(len(df_clean))
         p_norm = normalize(collab_scores)
@@ -140,7 +146,11 @@ def recommend():
             w_collab /= total_w
 
         hybrid = w_content * c_norm + w_collab * p_norm
-        hybrid[idx] = -np.inf
+
+        if idx < len(hybrid):
+            hybrid[idx] = -np.inf
+        else:
+            app.logger.warning(f"Index {idx} out of range for hybrid array of size {len(hybrid)}")
 
         top_idx = np.argsort(hybrid)[::-1][:K]
         recommendations = [{
