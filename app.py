@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import NMF
 import warnings
@@ -26,7 +27,7 @@ pop_scores = None
 predicted_ratings = None
 
 def load_data():
-    global df_clean, tfidf_matrix, cosine_sim, indices, use_collab, pop_scores, predicted_ratings, vectorizer
+    global df_clean, tfidf_matrix, indices, use_collab, pop_scores, predicted_ratings, vectorizer
 
     print(f"Loading CSV from: {CSV_PATH}")
     print(f"CSV exists: {os.path.exists(CSV_PATH)}")
