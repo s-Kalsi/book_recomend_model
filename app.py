@@ -26,7 +26,7 @@ pop_scores = None
 predicted_ratings = None
 
 def load_data():
-    global df_clean, tfidf_matrix, cosine_sim, indices, use_collab, pop_scores, predicted_ratings
+    global df_clean, tfidf_matrix, cosine_sim, indices, use_collab, pop_scores, predicted_ratings, vectorizer
 
     print(f"Loading CSV from: {CSV_PATH}")
     print(f"CSV exists: {os.path.exists(CSV_PATH)}")
@@ -69,7 +69,6 @@ def load_data():
         ngram_range=(1, 4), min_df=3, max_df=0.9
     )
     tfidf_matrix = vectorizer.fit_transform(df_clean['combined_features'])
-    cosine_sim = cosine_similarity(tfidf_matrix)
     print("TF-IDF model created")
 
     indices = pd.Series(df_clean.index, index=df_clean['title']).drop_duplicates()
@@ -150,12 +149,8 @@ def recommend():
             w_collab /= total_w
 
         hybrid = w_content * c_norm + w_collab * p_norm
-
-        if idx < len(hybrid):
-            hybrid[idx] = -np.inf
-        else:
-            app.logger.warning(f"Index {idx} out of range for hybrid array of size {len(hybrid)}")
-
+        hybrid[idx] = -np.inf
+        
         top_idx = np.argsort(hybrid)[::-1][:K]
         recommendations = [{
             'title': df_clean.iloc[i]['title'],
