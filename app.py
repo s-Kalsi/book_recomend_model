@@ -10,7 +10,7 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
+app = Flask(__name__, static_folder='static', template_folder='static/templates')
 
 BASE_DIR = os.getcwd()
 CSV_PATH = os.path.join(BASE_DIR, 'static', 'data', 'books_clean.csv')
