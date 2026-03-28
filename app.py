@@ -128,7 +128,7 @@ def recommend():
         if isinstance(idx, pd.Series) or isinstance(idx, pd.Index):
             idx = idx[0]
 
-        content_scores = cosine_sim[idx]
+        content_scores = linear_kernel(tfidf_matrix[idx], tfidf_matrix).flatten()
         c_norm = normalize(content_scores)
 
         if use_collab and predicted_ratings is not None:
