@@ -82,10 +82,10 @@ def normalize(scores: np.ndarray) -> np.ndarray:
     return (scores - mn) / (mx - mn + 1e-9)
 
 @app.route('/')
-def index():
-    return "App is running!"
 def home():
-    return render_template('index.html')
+    books_to_show = df_clean.head(50).to_dict('records') 
+    
+    return render_template('index.html', books=books_to_show)
 
 @app.route('/search', methods=['POST'])
 def search():
