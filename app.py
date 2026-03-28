@@ -12,9 +12,9 @@ warnings.filterwarnings('ignore')
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-BASE_DIR = Path(__file__).resolve().parent
-CSV_PATH = BASE_DIR / 'static' / 'data' / 'books_clean.csv'
-RATINGS_PATH = BASE_DIR / 'static' / 'data' / 'ratings.csv'
+BASE_DIR = os.getcwd()
+CSV_PATH = os.path.join(BASE_DIR, 'static', 'data', 'books_clean.csv')
+RATINGS_PATH = os.path.join(BASE_DIR, 'static', 'data', 'ratings.csv')
 
 df_clean = None
 tfidf_matrix = None
