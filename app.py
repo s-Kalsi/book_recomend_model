@@ -15,6 +15,7 @@ app = Flask(__name__)
 BASE_DIR = os.getcwd()
 CSV_PATH = os.path.join(BASE_DIR, 'static', 'data', 'books_clean.csv')
 RATINGS_PATH = os.path.join(BASE_DIR, 'static', 'data', 'ratings.csv')
+print("--- STANDBY: Loading Data ---")
 
 df_clean = None
 tfidf_matrix = None
@@ -81,6 +82,8 @@ def normalize(scores: np.ndarray) -> np.ndarray:
     return (scores - mn) / (mx - mn + 1e-9)
 
 @app.route('/')
+def index():
+    return "App is running!"
 def home():
     return render_template('index.html')
 
