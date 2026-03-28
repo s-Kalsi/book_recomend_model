@@ -214,7 +214,7 @@ def health():
         'tfidf_ready': tfidf_matrix is not None
     })
 
+load_data()
 if __name__ == '__main__':
-    load_data()
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port, debug=False)
